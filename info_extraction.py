@@ -15,20 +15,20 @@ def isNegated(doc):
 # Get all subjects
 def getSubs(NPs):
     subs = [span for span in NPs if span.root.dep_ in SUBJECTS and span.root.pos_ != "DET"]
-    print(subs)
+    #print(subs)
     return subs
 # Get all objects
 def getObjs(NPs):
     objs = [span for span in NPs if span.root.dep_ in OBJECTS]
     # Adding objects after a conjunction
     objs.extend([span for span in NPs if span.root.dep_ == "conj" and span.root.pos_ == "NOUN"])
-    print(objs)
+    #print(objs)
     return objs
 # Getting noun phrase (NP)
 def getNP(doc):
     # the chunks in the list are Span
     nounChunks = [chunk for chunk in doc.noun_chunks]
-    print("NPs: ", nounChunks)
+    #print("NPs: ", nounChunks)
     return nounChunks
 # Getting names from the noun chunks
 def getAttr(doc):
@@ -40,12 +40,13 @@ def getAdj(doc):
     print("Adjectives: ", adjs)
 
 # find SVOs
-def findSVO(doc):
+def findSVO(input):
+    doc = nlp(input)
     svos = []
     verbs = [token for token in doc if token.pos_ == "VERB" and token.dep_ != "aux"]
     if verbs == []:
         verbs = [token for token in doc if token.pos_ == "AUX" and token.dep_ == "ROOT"]
-    print(verbs)
+    #print(verbs)
     NPs = getNP(doc)
     subs = getSubs(NPs)
     objs = getObjs(NPs)
@@ -53,8 +54,8 @@ def findSVO(doc):
         verbNegated = isNegated(doc)
         for sub in subs:
             for obj in objs:
-                svos.append((sub.lower_, "!" + v.lower_ if verbNegated else v.lower_, obj.lower_))
-    return svos
+                svos.append((sub.lower_, "don't " + v.lower_ if verbNegated else v.lower_, obj.lower_))
+    return svos, objs
 # find SVs
 def findSV(doc):
     svs = []
@@ -78,12 +79,12 @@ def findSV(doc):
     return svs
 
 # gather the user input and gather the info
-while True:
-    doc = nlp(input("> "))
-    # print out the pos and deps
-    #for token in doc:
-       #print("Token {} POS: {}, dep: {}, tag: {}".format(token.text, token.pos_, token.dep_, token.tag_))
-
-    # get the input information
-    list = findSVO(doc)
-    resp.generateResp(list)
+# while True:
+#     doc = nlp(input("> "))
+#     print out the pos and deps
+#     for token in doc:
+#        print("Token {} POS: {}, dep: {}, tag: {}".format(token.text, token.pos_, token.dep_, token.tag_))
+#
+#     get the input information
+#     list = findSVO(doc)
+#     resp.generateResp(list)

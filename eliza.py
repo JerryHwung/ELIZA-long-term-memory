@@ -9,7 +9,6 @@
 import re
 import random
 import json_data
-import matcher
 
 class eliza:
   def __init__(self,username):
@@ -39,9 +38,27 @@ class eliza:
   #    chosen response from the corresponding list.
   #----------------------------------------------------------------------
   def respond(self,str):
-    # find match using matching patterns in matcher.py
-    oneMatcher = matcher.process_text(str)
-
+    #--------------------------------------------------------------------
+    # Firstly, look for memory keywords
+    #--------------------------------------------------------------------
+    # set all keywords in a list
+    keywords = list(map(lambda x:x[0], gMems))
+    # set all responds in a list
+    responds = list(map(lambda x:x[1], gMems))
+    # reset matched and memResp
+    matched = []
+    memResp = ''
+    # find a match in the input string
+    if keywords != []:
+      matched = re.findall(r"(?=(\b" + '|'.join(keywords) + r"\b))", str)
+    if matched != []:
+      # find the index of matched keywords
+      index = keywords.index(matched[0])
+      # choose a respond randomly in a list
+      memResp = random.choice(responds[index])
+    #---------------------------------------------------------------------
+    # Then, proceed to ELIZA original respond to continue conversation
+    # --------------------------------------------------------------------
     # find a match among keys
     for i in range(0, len(self.keys)):
       match = self.keys[i].match(str)
@@ -60,7 +77,16 @@ class eliza:
         # fix munged punctuation at the end
         if resp[-2:] == '?.': resp = resp[:-2] + '.'
         if resp[-2:] == '??': resp = resp[:-2] + '?'
-        return resp
+        return memResp + resp
+  def remember(self, keywords, responds):
+    result = []
+    for key in keywords:
+      # turn keyword into string
+      key = key.text
+      result.append(key)
+      result.append(responds)
+    if result != []:
+      gMems.append(result)
 
 #----------------------------------------------------------------------
 # gReflections, a translation table used to convert things you say
@@ -317,6 +343,8 @@ def command_interface():
       while s[-1] in '!.':
           s = s[:-1]
       print(therapist.respond(s))
+
+
 
 if __name__ == "__main__":
   command_interface()
