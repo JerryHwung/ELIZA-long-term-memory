@@ -41,11 +41,13 @@ def getAttr(doc):
 # Get adjective
 def getAdj(doc):
     adjs = [token.lemma_ for token in doc if token.pos_ == "ADJ"]
-    print("Adjectives: ", adjs)
-
+    return adjs
+#My car is red and big
 # find SVOs
 def findSVO(input):
     doc = nlp(input)
+    for token in doc:
+        print(token.pos_, token.dep_)
     svos = []
     verbs = [token for token in doc if token.pos_ == "VERB" and token.dep_ != "aux"]
     if verbs == []:
@@ -53,10 +55,27 @@ def findSVO(input):
     NPs = getNP(doc)
     subs = getSubs(NPs)
     objs = getObjs(NPs)
+    adjs = getAdj(doc)
     # This if statement is to solve SVO conj SVO format
     if len(subs) > 1 and len(verbs) > 1:
         for i in range(len(subs)):
             svos.append((subs[i].lower_, verbs[i].lower_, objs[i].lower_))
+
+        if len(svos) > 2:
+            svos = [()]
+            objs = []
+        return svos, objs
+    # This handles sentence with only subject and adjectives
+    elif adjs != []:
+        keylist = []
+        for v in verbs:
+            verbNegated = isNegated(doc)
+            for sub in subs:
+                key = sub.lower_
+                keylist.append(key)
+                for adj in adjs:
+                    svos.append((sub.lower_, v.lower_ + " not" if verbNegated else v.lower_, adj))
+        return svos, keylist
     else:
         for v in verbs:
             verbNegated = isNegated(doc)
@@ -64,10 +83,10 @@ def findSVO(input):
                 for obj in objs:
                     svos.append((sub.lower_, "don't " + v.lower_ if verbNegated else v.lower_, obj.lower_))
 
-    if len(svos) > 2:
-        svos = [()]
-        objs = []
-    return svos, objs
+        if len(svos) > 2:
+            svos = [()]
+            objs = []
+        return svos, objs
 # find SVs (still in progress)
 def findSV(input):
     doc = nlp(input)
@@ -90,3 +109,7 @@ def findSV(input):
                     svs.append((sub.lower_, "!" + aux.lower_ if auxVerbNegated else aux.lower_, adjv.lower_, attr))
 
     return svs
+
+while True:
+    txt = input("> ")
+    print(findSVO(txt))

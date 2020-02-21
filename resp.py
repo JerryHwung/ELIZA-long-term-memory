@@ -32,6 +32,10 @@ def generateResp(input):
         # change to list format
         words = list(item)
         print(words)
+        words = ' '.join(words)
+        print(words)
+        words = words.split()
+        print(words)
         dict = gReflections
         keys = dict.keys();
         for i in range(0, len(words)):
