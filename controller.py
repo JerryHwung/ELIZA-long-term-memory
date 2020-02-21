@@ -30,7 +30,6 @@ def controller(user_name):
         try:
             user_input = input("> ")
             svo = info_extraction.findSVO(user_input)
-            print(svo)
         except EOFError:
             print(user_input)
         if user_input:

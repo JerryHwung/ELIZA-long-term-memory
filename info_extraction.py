@@ -1,5 +1,8 @@
+# The idea of this piece of code is based on:
+# https://github.com/NSchrading/intro-spacy-nlp/blob/master/subject_object_extraction.py
+
 import spacy
-import resp
+
 nlp = spacy.load("en_core_web_sm")
 
 # declare lists of dependencies of subjects and objects
@@ -21,6 +24,7 @@ def getSubs(NPs):
 def getObjs(NPs):
     objs = [span for span in NPs if span.root.dep_ in OBJECTS]
     # Adding objects after a conjunction
+    objs.extend([span for span in NPs if span.root.dep_ == "conj" and span.root.pos_ == "PROPN"])
     objs.extend([span for span in NPs if span.root.dep_ == "conj" and span.root.pos_ == "NOUN"])
     #print(objs)
     return objs
@@ -46,15 +50,23 @@ def findSVO(input):
     verbs = [token for token in doc if token.pos_ == "VERB" and token.dep_ != "aux"]
     if verbs == []:
         verbs = [token for token in doc if token.pos_ == "AUX" and token.dep_ == "ROOT"]
-    #print(verbs)
     NPs = getNP(doc)
     subs = getSubs(NPs)
     objs = getObjs(NPs)
-    for v in verbs:
-        verbNegated = isNegated(doc)
-        for sub in subs:
-            for obj in objs:
-                svos.append((sub.lower_, "don't " + v.lower_ if verbNegated else v.lower_, obj.lower_))
+    # This if statement is to solve SVO conj SVO format
+    if len(subs) > 1 and len(verbs) > 1:
+        for i in range(len(subs)):
+            svos.append((subs[i].lower_, verbs[i].lower_, objs[i].lower_))
+    else:
+        for v in verbs:
+            verbNegated = isNegated(doc)
+            for sub in subs:
+                for obj in objs:
+                    svos.append((sub.lower_, "don't " + v.lower_ if verbNegated else v.lower_, obj.lower_))
+
+    if len(svos) > 2:
+        svos = [()]
+        objs = []
     return svos, objs
 # find SVs
 def findSV(doc):
@@ -78,13 +90,8 @@ def findSV(doc):
 
     return svs
 
-# gather the user input and gather the info
-# while True:
-#     doc = nlp(input("> "))
-#     print out the pos and deps
-#     for token in doc:
-#        print("Token {} POS: {}, dep: {}, tag: {}".format(token.text, token.pos_, token.dep_, token.tag_))
-#
-#     get the input information
-#     list = findSVO(doc)
-#     resp.generateResp(list)
+#gather the user input and gather the info
+#while True:
+    #txt = input("> ")
+    #get the input information
+    #print(findSVO(txt))

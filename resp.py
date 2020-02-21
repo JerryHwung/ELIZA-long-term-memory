@@ -40,4 +40,4 @@ def generateResp(input):
         fact = (' '.join(words))
         for resp in gSVO:
             result.append(resp.replace("%1", fact))
-        return result
+    return result

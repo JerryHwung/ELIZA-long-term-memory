@@ -1,3 +1,5 @@
+# Source: https://github.com/jezhiggins/eliza.py
+# This ELIZA code has been modified to implement long term memory
 #----------------------------------------------------------------------
 #  eliza.py
 #
@@ -78,17 +80,19 @@ class eliza:
         if resp[-2:] == '?.': resp = resp[:-2] + '.'
         if resp[-2:] == '??': resp = resp[:-2] + '?'
         return memResp + resp
-
+# save keywords and responds in gMems as a temporary memory
   def remember(self, keywords, responds):
-    result = []
     for key in keywords:
+      # reset result
+      result = []
       # turn keyword into string
       key = key.text
       result.append(key)
       result.append(responds)
-    if result != []:
-      gMems.append(result)
-
+      if result != []:
+        print(result)
+        gMems.append(result)
+# save in .txt file in json format
   def saveMem(self, username):
     json_data.create_json(username, gMems)
 
@@ -325,7 +329,7 @@ gPats = [
     "How do you feel when you say that?"]]
   ]
 
-# An empty list to store memory keywords and answer
+# An empty list to store memory keywords and responds
 gMems = []
 #----------------------------------------------------------------------
 #  command_interface

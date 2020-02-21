@@ -1,3 +1,4 @@
+# This code is to manage data serialization and deserialization
 import json
 
 # Create a new .json file and save data
