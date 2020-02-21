@@ -16,7 +16,7 @@ class eliza:
     self.data = json_data.read_json(username)
     # Load the data into gMems if list is not empty
     if self.data != []:
-      gMems.append(self.data)
+      gMems.extend(self.data)
     self.keys = list(map(lambda x:re.compile(x[0], re.IGNORECASE),gPats))
     self.values = list(map(lambda x:x[1],gPats))
 
@@ -78,6 +78,7 @@ class eliza:
         if resp[-2:] == '?.': resp = resp[:-2] + '.'
         if resp[-2:] == '??': resp = resp[:-2] + '?'
         return memResp + resp
+
   def remember(self, keywords, responds):
     result = []
     for key in keywords:
@@ -87,6 +88,9 @@ class eliza:
       result.append(responds)
     if result != []:
       gMems.append(result)
+
+  def saveMem(self, username):
+    json_data.create_json(username, gMems)
 
 #----------------------------------------------------------------------
 # gReflections, a translation table used to convert things you say

@@ -1,13 +1,12 @@
 import eliza
-
-# Get user's name
 import info_extraction
 import resp
 
-
+# Get user's name
 def intro():
     print('Hi, I am ELIZA.')
     print('Before we start the conversation please tell me your name.')
+    print('(Please enter full name or special alias if possible)')
 
     user_input = ""
     while user_input == "":
@@ -39,6 +38,8 @@ def controller(user_name):
                 user_input = user_input[:-1]
         print(bot.respond(user_input))
         bot.remember(svo[1], resp.generateResp(svo[0]))
+    # save memory into a .json file after the conversation ends
+    bot.saveMem(username)
 
 if __name__ == "__main__":
     # Load the intro to get user's name
