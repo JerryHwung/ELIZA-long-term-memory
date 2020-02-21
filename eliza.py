@@ -85,12 +85,14 @@ class eliza:
     for key in keywords:
       # reset result
       result = []
-      # turn keyword into string
-      key = key.text
+      if isinstance(key, str):
+        pass
+      else:
+        # turn keyword into string
+        key = key.text
       result.append(key)
       result.append(responds)
       if result != []:
-        print(result)
         gMems.append(result)
 # save in .txt file in json format
   def saveMem(self, username):

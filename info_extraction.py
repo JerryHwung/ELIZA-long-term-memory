@@ -46,8 +46,6 @@ def getAdj(doc):
 # find SVOs
 def findSVO(input):
     doc = nlp(input)
-    for token in doc:
-        print(token.pos_, token.dep_)
     svos = []
     verbs = [token for token in doc if token.pos_ == "VERB" and token.dep_ != "aux"]
     if verbs == []:
@@ -109,7 +107,3 @@ def findSV(input):
                     svs.append((sub.lower_, "!" + aux.lower_ if auxVerbNegated else aux.lower_, adjv.lower_, attr))
 
     return svs
-
-while True:
-    txt = input("> ")
-    print(findSVO(txt))
