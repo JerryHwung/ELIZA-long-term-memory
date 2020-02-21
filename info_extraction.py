@@ -68,8 +68,9 @@ def findSVO(input):
         svos = [()]
         objs = []
     return svos, objs
-# find SVs
-def findSV(doc):
+# find SVs (still in progress)
+def findSV(input):
+    doc = nlp(input)
     svs = []
     auxVerb = [token for token in doc if token.pos_ == "VERB" and token.dep_ == "aux"]
     mainVerbs = [token for token in doc if token.pos_ == "VERB" and token.dep_ != "aux"]
@@ -89,9 +90,3 @@ def findSV(doc):
                     svs.append((sub.lower_, "!" + aux.lower_ if auxVerbNegated else aux.lower_, adjv.lower_, attr))
 
     return svs
-
-#gather the user input and gather the info
-#while True:
-    #txt = input("> ")
-    #get the input information
-    #print(findSVO(txt))
